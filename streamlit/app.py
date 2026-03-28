@@ -5,6 +5,11 @@ import joblib
 from tensorflow.keras.models import load_model
 from sklearn.ensemble import RandomForestClassifier
 import sklearn
+from pathlib import Path
+
+# Resolve files relative to this script so Streamlit Cloud/project root differences
+# do not cause FileNotFoundError when the app is started from the repository root.
+BASE_DIR = Path(__file__).resolve().parent
 
 # หน้าเว็บ: ตั้งค่าหน้าตา
 st.set_page_config(page_title='F1 Predictor', page_icon='🏎️', layout='wide')
@@ -65,10 +70,19 @@ st.markdown(_CSS, unsafe_allow_html=True)
 # --- 1. โหลดข้อมูลและสร้างระบบ Mapping ---
 @st.cache_resource
 def setup_environment():
-    df_real_names = pd.read_csv('Formula1_Pitstop_Data_1950-2024_all_rounds.csv')
-    df_train = pd.read_csv('f1_enhanced_dataset_for_analysis.csv')
-    loaded = joblib.load('f1_ensemble_model_v3.pkl')
-    nn = load_model('f1_nn_model_v3.h5')
+    df_real_names = pd.read_csv(str(BASE_DIR / 'Formula1_Pitstop_Data_1950-2024_all_rounds.csv'))
+    df_train = pd.read_csv(str(BASE_DIR / 'f1_enhanced_dataset_for_analysis.csv'))
+    loaded = None
+    try:
+        loaded = joblib.load(str(BASE_DIR / 'f1_ensemble_model_v3.pkl'))
+    except Exception:
+        loaded = None
+
+    nn = None
+    try:
+        nn = load_model(str(BASE_DIR / 'f1_nn_model_v3.h5'))
+    except Exception:
+        nn = None
 
     # Try to detect if the loaded model is a VotingClassifier (ensemble of RF/GB/LR)
     voting_model = None
