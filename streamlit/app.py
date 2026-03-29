@@ -6,6 +6,7 @@ from tensorflow.keras.models import load_model
 from sklearn.ensemble import RandomForestClassifier
 import sklearn
 from pathlib import Path
+from textwrap import dedent 
 
 # Resolve files relative to this script so Streamlit Cloud/project root differences
 # do not cause FileNotFoundError when the app is started from the repository root.
@@ -171,8 +172,8 @@ def encode_selection(selection, categories_list):
     return index / (len(categories_list) - 1) if len(categories_list) > 1 else 0.0
 
 # Header
-st.markdown('<div class="big-title">F1 Professional Predictor</div>', unsafe_allow_html=True)
-st.markdown('<div class="sub">ระบบทำนายผลการแข่ง ว่าจะติด Top 10 หรือไม่</div>', unsafe_allow_html=True)
+st.markdown('<div class="big-title">F1 TOP 10 Predictor</div>', unsafe_allow_html=True)
+st.markdown('<div class="sub">ระบบวิเคราะห์และทำนายอันดับการเข้าเส้นชัยใน 10 อันดับแรกของการแข่งขัน Formula 1 </div>', unsafe_allow_html=True)
 st.write('')
 
 # (Moved analysis UI into the Test tabs below; removed sidebar inputs.)
@@ -190,7 +191,13 @@ tabs = st.tabs([
 
 # ====================== TAB 1: Dataset Features ======================
 with tabs[0]:
-    st.markdown("### อธิบาย Feature ของ Dataset")
+    
+    st.success("### ที่มาและความสำคัญ")
+    st.write(""" 
+        โปรเจกต์นี้มีจุดประสงค์เพื่อวิเคราะห์และทำนายอันดับการเข้าเส้นชัยใน 10 อันดับแรกของการแข่งขัน Formula 1 โดยใช้เทคนิค Machine Learning และ Neural Network โดยใช้ข้อมูลตั้งแต่ปี 1950 ถึง 2024 ซึ่งเป็นยุคที่มีการเปลี่ยนแปลงอย่างมากในเทคโนโลยีรถแข่งและกลยุทธ์การแข่ง การวิเคราะห์นี้จะช่วยให้เราเข้าใจปัจจัยที่มีผลต่อความสำเร็จของนักแข่งและทีมในแต่ละฤดูกาล และสามารถทำนายผลการแข่งขันได้อย่างแม่นยำมากขึ้น
+    """)
+    
+    st.success("### อธิบาย Feature ของ Dataset")
     
     st.markdown("### Dataset 1: Formula1_Pitstop_Data_1950-2024_all_rounds.csv")
     st.write(""" ชุดข้อมูลนี้เน้นไปที่ข้อมูลเชิงประวัติศาสตร์และสถิติในพิทสตอป (Pit Stop) ของการแข่งขัน F1 ตั้งแต่ปี 1950 ถึง 2024 โดยมีฟีเจอร์หลัก ๆ เช่น:
@@ -227,10 +234,10 @@ with tabs[0]:
     st.divider()
     st.subheader("แหล่งอ้างอิงข้อมูล (References)")
     st.write("""
-    [1] Akash Rane. (2024). Formula 1 Pit Stop Dataset. Kaggle.  
+    1. Akash Rane. (2024). Formula 1 Pit Stop Dataset. Kaggle.  
     https://www.kaggle.com/datasets/akashrane2609/formula-1-pit-stop-dataset  
 
-    [2] Usman. (2024). Formula 1 Race Dataset for Predictive Analysis. Kaggle.  
+    2. Usman. (2024). Formula 1 Race Dataset for Predictive Analysis. Kaggle.  
     https://www.kaggle.com/datasets/usman136/formula-1-race-dataset-for-predictive-analysis
     """)
 
@@ -279,13 +286,23 @@ with tabs[1]:
     """)
     
     st.success("### 4. แหล่งอ้างอิงข้อมูล (Data Sources)")
-    st.write("""
-    [1] Scikit-learn Documentation: Ensemble Methods. https://scikit-learn.org/stable/modules/ensemble.html  
-    [2] XGBoost Documentation. https://xgboost.readthedocs.io  
-    [3] LightGBM Documentation. https://lightgbm.readthedocs.io  
-    [4] Akash Rane. (2024). Formula 1 Pit Stop Dataset. Kaggle. https://www.kaggle.com/datasets/akashrane2609/formula-1-pit-stop-dataset  
-    [5] Usman. (2024). Formula 1 Race Dataset for Predictive Analysis. Kaggle.  https://www.kaggle.com/datasets/usman136/formula-1-race-dataset-for-predictive-analysis
-    """)
+    st.markdown(dedent("""
+
+    1. Scikit-learn Documentation: Ensemble Methods  
+       https://scikit-learn.org/stable/modules/ensemble.html
+
+    2. XGBoost Documentation  
+       https://xgboost.readthedocs.io
+
+    3. LightGBM Documentation  
+       https://lightgbm.readthedocs.io
+
+    4. Akash Rane. (2024). Formula 1 Pit Stop Dataset. Kaggle  
+       https://www.kaggle.com/datasets/akashrane2609/formula-1-pit-stop-dataset
+
+    5. Usman. (2024). Formula 1 Race Dataset for Predictive Analysis. Kaggle  
+       https://www.kaggle.com/datasets/usman136/formula-1-race-dataset-for-predictive-analysis
+"""))
 
 # ====================== TAB 3: Model 2 Explanation ======================
 with tabs[2]:
@@ -324,10 +341,18 @@ with tabs[2]:
     """)
     
     st.success("### 4. แหล่งอ้างอิงข้อมูล (Data Sources)")
-    st.write("""
-    [1] TensorFlow & Keras Documentation: Sequential Model. https://www.tensorflow.org/guide/keras
-    [2] Chollet, F. (2017). Deep Learning with Python. Manning Publications.
-    [4] Akash Rane & Usman (2024). Kaggle F1 Datasets 
+    st.markdown("""
+
+    1. TensorFlow & Keras Documentation: Sequential Model  
+    https://www.tensorflow.org/guide/keras
+
+    2. Akash Rane. (2024). Formula 1 Pit Stop Dataset. Kaggle.  
+    https://www.kaggle.com/datasets/akashrane2609/formula-1-pit-stop-dataset
+
+    3. Usman. (2024). Formula 1 Race Dataset for Predictive Analysis. Kaggle.  
+    https://www.kaggle.com/datasets/usman136/formula-1-race-dataset-for-predictive-analysis
+
+    4. Chollet, F. (2017). Deep Learning with Python. Manning Publications.(สำหรับแนวคิดและทฤษฎีเบื้องหลังโครงข่ายประสาทเทียม)
     """)
 
 # ====================== TAB 4: Test Model 1 (Ensemble) ======================
@@ -337,15 +362,34 @@ with tabs[3]:
 
     col1, col2 = st.columns(2)
     with col1:
-        year = st.slider('Season Year', 1950, 2024, 2024)
-        sel_gp = st.selectbox('Grand Prix (Circuit)', m['global_gps'])
-        sel_wea = st.selectbox('Weather', m['weather'])
+        year = st.slider('Season Year', int(min(m['seasons'])), int(max(m['seasons'])), int(max(m['seasons'])), key='ens_year')
+        # season-aware GP list with fallback to global list
+        gp_options = m['circuits_by_season'].get(year, m['global_gps']) or m['global_gps']
+        sel_gp = st.selectbox('Grand Prix (Circuit)', gp_options, key='ens_gp')
+        sel_wea = st.selectbox('Weather', m['weather'], key='ens_wea')
     with col2:
-        sel_driver = st.selectbox('Driver', m['global_drivers'])
-        sel_team = st.selectbox('Team', m['global_teams'])
-        start_pos = st.number_input('Starting Position', 1, 20, 10)
-        qual_pos = st.number_input('Qualifying Position', 1, 20, 10)
-        sel_tire = st.selectbox('Tire Strategy', m['tires'])
+        # season-aware drivers and teams
+        driver_options = m['drivers_by_season'].get(year, m['global_drivers']) or m['global_drivers']
+        team_options = m['teams_by_season'].get(year, m['global_teams']) or m['global_teams']
+
+        sel_driver = st.selectbox('Driver', driver_options, key='ens_driver')
+
+        # if we have driver->teams mapping for the season, prefer that
+        teams_for_driver = m['teams_by_season_and_driver'].get((year, sel_driver), [])
+        if teams_for_driver:
+            sel_team = st.selectbox('Team', teams_for_driver, key='ens_team')
+        else:
+            sel_team = st.selectbox('Team', team_options, key='ens_team')
+
+        start_pos = st.number_input('Starting Position', 1, 20, 10, key='ens_start')
+        qual_pos = st.number_input('Qualifying Position', 1, 20, 10, key='ens_qual')
+        sel_tire = st.selectbox('Tire Strategy', m['tires'], key='ens_tire')
+
+    # Data integrity checks and warnings
+    if sel_driver not in driver_options:
+        st.warning(f"Selected driver '{sel_driver}' not present in season {year}. Showing nearest available: {', '.join(driver_options[:5])}...")
+    if sel_team not in team_options and (year, sel_driver) not in m['teams_by_season_and_driver']:
+        st.warning(f"Selected team '{sel_team}' not present in season {year}.")
 
     if st.button('วิเคราะห์ด้วย Ensemble Model', type='primary'):
         # Prepare input using global lists
@@ -407,15 +451,10 @@ with tabs[3]:
 
         col_main.markdown(_mini_bar(ens_prob, '#10b981'), unsafe_allow_html=True)
 
-        # Expandable details: show RF component for transparency
-        with st.expander('Components (Random Forest)'):
-            st.metric('Random Forest (component)', f"{rf_prob*100:.1f}%")
-            st.markdown(_mini_bar(rf_prob, '#ef4444'), unsafe_allow_html=True)
-
         if ens_prob > 0.5:
             st.success(f"AI มั่นใจว่า {sel_driver} จะติด Top 10 แน่นอน! (Voting Ensemble)")
         else:
-            st.warning(f"{sel_driver} อาจจะต้องเหนื่อยหน่อยในเรซนี้ (Voting Ensemble)")
+            st.warning(f"{sel_driver} ไม่แน่นอนว่าจะติด Top 10 อาจจะต้องเหนื่อยหน่อยใน Race นี้ (Voting Ensemble)")
 
         st.markdown('</div>', unsafe_allow_html=True)
 
@@ -426,15 +465,30 @@ with tabs[4]:
 
     col1, col2 = st.columns(2)
     with col1:
-        year = st.slider('Season Year', 1950, 2024, 2024, key='nn_year')
-        sel_gp = st.selectbox('Grand Prix (Circuit)', m['global_gps'], key='nn_gp')
+        year = st.slider('Season Year', int(min(m['seasons'])), int(max(m['seasons'])), int(max(m['seasons'])), key='nn_year')
+        gp_options = m['circuits_by_season'].get(year, m['global_gps']) or m['global_gps']
+        sel_gp = st.selectbox('Grand Prix (Circuit)', gp_options, key='nn_gp')
         sel_wea = st.selectbox('Weather', m['weather'], key='nn_wea')
     with col2:
-        sel_driver = st.selectbox('Driver', m['global_drivers'], key='nn_driver')
-        sel_team = st.selectbox('Team', m['global_teams'], key='nn_team')
+        driver_options = m['drivers_by_season'].get(year, m['global_drivers']) or m['global_drivers']
+        team_options = m['teams_by_season'].get(year, m['global_teams']) or m['global_teams']
+
+        sel_driver = st.selectbox('Driver', driver_options, key='nn_driver')
+
+        teams_for_driver = m['teams_by_season_and_driver'].get((year, sel_driver), [])
+        if teams_for_driver:
+            sel_team = st.selectbox('Team', teams_for_driver, key='nn_team')
+        else:
+            sel_team = st.selectbox('Team', team_options, key='nn_team')
+
         start_pos = st.number_input('Starting Position', 1, 20, 10, key='nn_start')
         qual_pos = st.number_input('Qualifying Position', 1, 20, 10, key='nn_qual')
         sel_tire = st.selectbox('Tire Strategy', m['tires'], key='nn_tire')
+
+    if sel_driver not in driver_options:
+        st.warning(f"Selected driver '{sel_driver}' not present in season {year}.")
+    if sel_team not in team_options and (year, sel_driver) not in m['teams_by_season_and_driver']:
+        st.warning(f"Selected team '{sel_team}' not present in season {year}.")
 
     if st.button('วิเคราะห์ด้วย Neural Network', type='primary'):
         gp_encoded = encode_selection(sel_gp, m['global_gps'])
@@ -474,7 +528,7 @@ with tabs[4]:
         if nn_prob > 0.5:
             st.success(f"AI (NN) มั่นใจว่า {sel_driver} จะติด Top 10 แน่นอน!")
         else:
-            st.warning(f"AI (NN): {sel_driver} อาจจะต้องเหนื่อยหน่อยในเรซนี้")
+            st.warning(f"AI (NN): {sel_driver} ไม่แน่นอนว่าจะติด Top 10 อาจจะต้องเหนื่อยหน่อยใน Race นี้")
 
         st.markdown('</div>', unsafe_allow_html=True)
 
