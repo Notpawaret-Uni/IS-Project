@@ -194,7 +194,7 @@ with tabs[0]:
     
     st.success("### ที่มาและความสำคัญ")
     st.write(""" 
-        โปรเจกต์นี้มีจุดประสงค์เพื่อวิเคราะห์และทำนายอันดับการเข้าเส้นชัยใน 10 อันดับแรกของการแข่งขัน Formula 1 โดยใช้เทคนิค Machine Learning และ Neural Network โดยใช้ข้อมูลตั้งแต่ปี 1950 ถึง 2024 ซึ่งเป็นยุคที่มีการเปลี่ยนแปลงอย่างมากในเทคโนโลยีรถแข่งและกลยุทธ์การแข่ง การวิเคราะห์นี้จะช่วยให้เราเข้าใจปัจจัยที่มีผลต่อความสำเร็จของนักแข่งและทีมในแต่ละฤดูกาล และสามารถทำนายผลการแข่งขันได้อย่างแม่นยำมากขึ้น
+        โปรเจกต์นี้มีจุดประสงค์เพื่อวิเคราะห์และทำนายอันดับการเข้าเส้นชัยใน 10 อันดับแรกของการแข่งขัน Formula 1 โดยใช้เทคนิค Machine Learning และ Neural Network โดยใช้ข้อมูลตั้งแต่ปี 1950 ถึง 2024 ซึ่งเป็นยุคที่มีการเปลี่ยนแปลงอย่างมากในเทคโนโลยีรถแข่งและกลยุทธ์การแข่ง การวิเคราะห์นี้จะช่วยให้เข้าใจปัจจัยที่มีผลต่อความสำเร็จของนักแข่งและทีมในแต่ละฤดูกาล และสามารถทำนายผลการแข่งขันได้อย่างแม่นยำมากขึ้น
     """)
     
     st.success("### อธิบาย Feature ของ Dataset")
@@ -232,6 +232,32 @@ with tabs[0]:
     """)
     
     st.divider()
+    st.success("### ขั้นตอนการ Clean Data (จาก Colab)")
+    
+    col_clean1, col_clean2 = st.columns(2)
+    
+    with col_clean1:
+        st.markdown("""
+        **1. Data Integration**
+        - ทำการเชื่อมโยงข้อมูลจาก 2 Dataset หลักเข้าด้วยกัน คือ ข้อมูลการแข่งขัน (Race Data) และ ข้อมูลพิทสตอป (Pit Stop Data) โดยใช้คีย์หลัก Key คือ `Season` และ `Driver` เพื่อให้ได้ภาพรวมสถิติของนักแข่งแต่ละคนในแต่ละสนามอย่างครบถ้วน
+        
+        **2. Data Leakage Prevention**
+        - ทำการคัดออก (Drop) คอลัมน์ที่จะทราบผลก็ต่อเมื่อการแข่งขันจบลงแล้วเท่านั้น เช่น Points, RaceTime_sec, DNF, และ Overtakes หากเก็บค่าเหล่านี้ไว้ โมเดลจะทายถูกเกือบ 100% แต่จะใช้งานจริงไม่ได้
+        
+        **3. Missing Value Handling**
+        - ข้อมูลบางส่วนโดยเฉพาะสถิติพิทสตอปในอดีตอาจมีค่าว่าง (Missing Values) จึงเติมค่าว่างด้วยค่าเฉลี่ย (Mean) ของนักแข่งทั้งหมดและเติมค่าว่างด้วย 0 (สมมติว่าไม่มีการเข้าพิท)
+        """)
+        
+    with col_clean2:
+        st.markdown("""
+        **4. Label Encoding**
+        - ใช้เทคนิค Label Encoding เพื่อแปลงชื่อนักแข่ง (Driver), ชื่อทีม (Team), สนามแข่ง (Location), และสภาพอากาศ (Weather) ให้กลายเป็นตัวเลขลำดับ เพื่อให้โมเดลสามารถนำไปคำนวณทางคณิตศาสตร์ได้
+        
+        **5. MinMaxScaler**
+        - ปรับข้อมูลทุกตัวให้อยู่ในช่วง $[0, 1]$ เพื่อลด Bias ของตัวเลขที่มีค่าสูง หากไม่ปรับสเกล โมเดลจะให้ความสำคัญกับตัวเลขที่มากกว่าโดยผิดพลาด การปรับให้เป็น $[0, 1]$ ช่วยให้ Neural Network เรียนรู้ได้เร็วและมีประสิทธิภาพสูงสุด
+        """)
+    
+    st.divider()
     st.subheader("แหล่งอ้างอิงข้อมูล (References)")
     st.write("""
     1. Akash Rane. (2024). Formula 1 Pit Stop Dataset. Kaggle.  
@@ -247,8 +273,7 @@ with tabs[1]:
     st.write("""
     **แนวทางการพัฒนาโมเดล Machine Learning (Ensemble)**
     """)
-    
-    
+
     st.success("### 1. การเตรียมข้อมูล (Data Preparation & Feature Engineering)")
     st.markdown("""
     * **Data Integration**: เชื่อมโยงข้อมูลจากสถิติพิทสตอป (Pit Stop) และผลการแข่งเชิงลึก โดยใช้ **Season** และ **Driver** เป็น Key หลัก
@@ -259,6 +284,9 @@ with tabs[1]:
         * ปรับช่วงข้อมูลเป็น [0, 1] ด้วย **MinMaxScaler** เพื่อป้องกันปัญหาตัวแปรที่มีค่าสูง (เช่น ปี ค.ศ.) ข่มตัวแปรสำคัญอื่น ๆ
     """)
     
+    st.write("**MinMaxScaler**")
+    st.latex(r"x' = \frac{x - \min(x)}{\max(x) - \min(x)}")
+    
     st.success("### 2. ทฤษฎีอัลกอริทึม (Ensemble Theory)")
     st.markdown("""
     โมเดลนี้ใช้เทคนิค **Voting Classifier (Soft Voting)** ซึ่งเป็นการมัดรวมพลังจาก 3 อัลกอริทึมที่แตกต่างกันเพื่อลดความผิดพลาด:
@@ -267,6 +295,7 @@ with tabs[1]:
     3.  **Logistic Regression**: ใช้สมการความน่าจะเป็นทางคณิตศาสตร์เพื่อทำนายการแยกแยะกลุ่มข้อมูล (Classification)
     """)
     
+    st.write("**Logistic Regression**")
     st.latex(r"P(y=1|x) = \frac{1}{1 + e^{-(\beta_0 + \beta_1x)}}")
 
     st.write("**การรวมผลลัพธ์ (Soft Voting):**")
@@ -277,13 +306,46 @@ with tabs[1]:
     """)
     
     st.success("### 3. ขั้นตอนการพัฒนาโมเดล (Model Development)")
-    st.markdown("""
-    * **Data Splitting**: แบ่งข้อมูลออกเป็น 2 ส่วน คือ Train Set (80%) สำหรับสอนโมเดล และ Test Set (20%) สำหรับวัดผลความแม่นยำของโมเดล
-    * **Training**: นำข้อมูลเข้าสู่กระบวนการเทรนผ่าน VotingClassifier ใน Scikit-learn
-    * **Evaluation** วัดประสิทธิภาพด้วย Classification Report เพื่อดู
-        * Accuracy: ความแม่นยำโดยรวม**
-        * Precision & Recall: ความสามารถในการระบุผู้ที่จะติด Top 10 ได้อย่างถูกต้องและครบถ้วน
-    """)
+    
+    col_ens1, col_ens2 = st.columns(2)
+    
+    with col_ens1:
+        st.markdown("""
+        **1. การแบ่งข้อมูลสำหรับการทดสอบ (80/20)**
+        - ก่อนการฝึกฝน แบ่งข้อมูลออกเป็น 2 ชุด คือ
+             * `Training Set (80%)`: ใช้สำหรับให้โมเดลเรียนรู้ความสัมพันธ์ของข้อมูล
+             * `Test Set (20%)`: ใช้สำหรับวัดผลความแม่นยำด้วยข้อมูลที่โมเดลไม่เคยเห็นมาก่อน (Unseen Data) เพื่อยืนยันว่าโมเดลใช้งานได้จริง
+        
+        **2. การเลือกอัลกอริทึมพื้นฐาน**
+        - เลือกใช้โมเดล 3 ประเภทที่มีจุดเด่นต่างกัน เพื่อให้นำมาเสริมจุดแข็งและอุดจุดอ่อนซึ่งกันและกัน
+             * `Random Forest (RF)`: ใช้การสร้างต้นไม้ตัดสินใจหลาย ๆ ต้นแล้วหาเสียงส่วนมาก ช่วยลดความแปรปรวน (Variance)
+             * `Gradient Boosting (GB)`: เรียนรู้จากข้อผิดพลาดของรอบก่อนหน้าเพื่อเพิ่มความแม่นยำ (Bias Reduction)
+             * `Logistic Regression (LR)`: ใช้สมการความน่าจะเป็นเชิงเส้นเพื่อหาเกณฑ์ในการจำแนกที่ชัดเจน
+    
+        """)
+        
+    with col_ens2:
+        st.markdown("**3. Soft Voting Strategy**")
+        
+        st.latex(r"\hat{P}(y|x) = \frac{1}{n} \sum_{i=1}^{n} P_i(y|x)")
+        
+        st.markdown("""
+        - แทนที่จะดูแค่ว่าโมเดลไหนทายว่า "ติด" หรือ "ไม่ติด" นำความน่าจะเป็นจากทั้ง 3 โมเดลมาหาค่าเฉลี่ยเพื่อให้ผลลัพธ์ที่เสถียรกว่า
+        
+        **4. ผลลัพธ์และการบันทึกโมเดล (Training Results)**
+        - โมเดล Ensemble ชุดนี้สามารถทำความแม่นยำได้สูงถึง 92.85% ในการทดสอบ
+        - ทำการบันทึกเป็นไฟล์ `f1_ensemble_model_v3.pkl` เพื่อนำมาใช้รันบนหน้าเว็บ Streamlit
+        """)
+    
+    col_space_left, col_image, col_space_right = st.columns([1, 2, 1])
+
+    with col_image:
+        try:
+            img_ens = BASE_DIR / 'result_ensemble.png'
+            # ใส่ caption และสั่งให้ใช้ความกว้างเต็มพื้นที่คอลัมน์กลาง
+            st.image(str(img_ens), caption='Confusion Matrix ของ Ensemble Model', use_container_width=True)
+        except FileNotFoundError:
+            st.error("❌ หาไฟล์รูปไม่เจอ!")
     
     st.success("### 4. แหล่งอ้างอิงข้อมูล (Data Sources)")
     st.markdown(dedent("""
@@ -313,7 +375,7 @@ with tabs[2]:
     st.success("### 1. การเตรียมข้อมูล (Data Preparation & Feature Engineering)")
     st.markdown("""
     * **Feature Selection**: คัดเลือกตัวแปรนำเข้า (Input Features) ทั้งหมด 9 ตัวแปรที่ผ่านการตรวจสอบแล้วว่าไม่มี Data Leakage
-    * **Normalization (MinMaxScaler)**: เนื่องจาก Neural Network ใช้การคำนวณผ่าน Gradient หากข้อมูลมีสเกลที่ต่างกันมาก (เช่น Year เทียบกับ Start Position) จะทำให้โมเดลหาจุดที่เหมาะสมที่สุด (Convergence) ได้ยาก เราจึงปรับข้อมูลทุกตัวให้อยู่ในช่วง [0, 1]
+    * **Normalization (MinMaxScaler)**: เนื่องจาก Neural Network ใช้การคำนวณผ่าน Gradient หากข้อมูลมีสเกลที่ต่างกันมาก (เช่น Year เทียบกับ Start Position) จะทำให้โมเดลหาจุดที่เหมาะสมที่สุด (Convergence) ได้ยาก จึงปรับข้อมูลทุกตัวให้อยู่ในช่วง [0, 1]
     * **Handling Categorical Data**: แปลงชื่อสนาม ทีม และนักแข่ง ด้วยเทคนิค Label Encoding เพื่อเปลี่ยนข้อความเป็นดัชนีตัวเลขที่โครงข่ายประสาทสามารถนำไปคำนวณทางคณิตศาสตร์ได้
     """)
     
@@ -333,12 +395,57 @@ with tabs[2]:
     * **Regularization (Dropout)** ใส่ค่า Dropout 20% เพื่อสุ่มปิดนิวรอนบางส่วนระหว่างการเทรน ป้องกันปัญหา Overfitting (การที่โมเดลจำข้อสอบได้แม่นแต่ทำข้อสอบจริงไม่ได้)
     """)
     
+    st.write("**ReLU (Rectified Linear Unit)**")
+    st.latex(r"f(x) = \max(0, x)")
+    
+    st.write("**Sigmoid**")
+    st.latex(r"\sigma(x) = \frac{1}{1 + e^{-x}}")
+    
     st.success("### 3. ขั้นตอนการพัฒนาโมเดล (Model Development)")
-    st.markdown("""
-    * **Compilation**: ใช้ Binary Cross-Entropy เป็น Loss Function เพื่อวัดระยะห่างระหว่างผลทำนายกับค่าจริง และใช้ Adam Optimizer ในการปรับค่าน้ำหนัก (Weights) อัตโนมัติ  
-    * **Training Process**: กำหนดการเทรนทั้งหมด 30 รอบ (Epochs) โดยแบ่งข้อมูลเป็น Batch ขนาด 32 เพื่อให้การคำนวณมีประสิทธิภาพ
-    * **Validation**: มีการแบ่งข้อมูลส่วนหนึ่งไว้สำหรับตรวจสอบ (Validation Set) ในทุกๆ รอบการเทรน เพื่อดูแนวโน้มความแม่นยำและค่าความผิดพลาด (Loss Curve)  
-    """)
+    col_nn1, col_nn2 = st.columns(2)
+    
+    with col_nn1:
+       st.markdown("""
+        **1. การออกแบบโครงสร้าง (Network Architecture)**
+        - ช้โครงสร้างแบบ Sequential ซึ่งประกอบด้วยเลเยอร์ทั้งหมด 4 ชั้น
+             * `Input Layer`: รับข้อมูลนำเข้าทั้ง 9 Feature
+             * `Hidden Layers`: ประกอบด้วย 3 ชั้นหลัก ขนาด 64, 32 และ 16 นิวรอนตามลำดับ เพื่อเพิ่มความสามารถในการเรียนรู้ความสัมพันธ์ที่ซับซ้อน
+             * `Output Layer`: มี 1 นิวรอน พร้อมฟังก์ชัน Sigmoid เพื่อทำนายความน่าจะเป็นของการติด Top 10
+        
+        **2. ฟังก์ชันกระตุ้นและระบบป้องกัน (Activation & Regularization)**
+        * `ReLU (Rectified Linear Unit)`: ใช้ใน Hidden Layers ทุกชั้นเพื่อให้โมเดลเรียนรู้แบบ Non-linear ได้ดี และช่วยลดปัญหา Vanishing Gradient
+        * `Sigmoid`: ใช้ในชั้นสุดท้ายเพื่อแปลงค่าเป็นความน่าจะเป็นสำหรับการจำแนกประเภท
+        * `Dropout (0.2)`: แทรกหลังเลเยอร์แรก โดยการสุ่มปิดนิวรอน 20% ระหว่างเทรน เพื่อป้องกันปัญหา Overfitting หรือการที่โมเดลจดจำข้อมูลชุดเทรนมากเกินไปจนทำข้อสอบจริงไม่ได้
+    
+        """)
+        
+    with col_nn2:
+        
+        st.markdown("**4. การตั้งค่าการเรียนรู้ (Compilation)**")
+        st.write("**Loss Function: Binary Crossentropy**")
+        st.latex(r"L = -\frac{1}{N} \sum_{i=1}^{N} [y_i \log(\hat{y}_i) + (1 - y_i) \log(1 - \hat{y}_i)]")
+        st.markdown("""
+        
+        * `Loss Function`: ใช้ binary_crossentropy ซึ่งเหมาะสำหรับงานคัดแยก 2 ประเภท
+        * `Optimizer`: ใช้ Adam Optimizer ซึ่งเป็นอัลกอริทึมที่ปรับค่าน้ำหนัก (Weights) ได้อย่างมีประสิทธิภาพและรวดเร็ว
+        """)
+        
+        st.markdown("""
+        **3. ผลลัพธ์และการบันทึกโมเดล (Training & Performance)**
+        * `Process`: กำหนดการเทรนทั้งหมด 30 รอบ (Epochs) โดยใช้ Batch Size ขนาด 32
+        * `Performance`: โมเดลนี้ทำความแม่นยำได้ประมาณ 90.19% ในชุดข้อมูลทดสอบ
+        * `Model Persistence`: บันทึกโมเดลในรูปแบบไฟล์ f1_nn_model_v3.h5 เพื่อนำไปโหลดใช้งานบน Streamlit ต่อไป
+        """)
+    
+    col_space_left, col_image, col_space_right = st.columns([1, 2, 1])
+
+    with col_image:
+        try:
+            img_ens = BASE_DIR / 'result_neural_network.png'
+            # ใส่ caption และสั่งให้ใช้ความกว้างเต็มพื้นที่คอลัมน์กลาง
+            st.image(str(img_ens), caption='Confusion Matrix ของ Neural Network Model', use_container_width=True)
+        except FileNotFoundError:
+            st.error("❌ หาไฟล์รูปไม่เจอ!")
     
     st.success("### 4. แหล่งอ้างอิงข้อมูล (Data Sources)")
     st.markdown("""
